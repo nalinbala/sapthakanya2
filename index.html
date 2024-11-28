@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Saptakanya Commemoration</title>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      overflow-x: hidden;
+    }
+
+    .video-section {
+      height: calc(100vh + 100vh * (1 / 0.3)); /* Dynamic height for video scroll duration */
+    }
+
+    .video-container {
+      position: fixed; /* Keeps video fixed during playback */
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 10;
+    }
+
+    video {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%); /* Center the video */
+      width: 100%;
+      height: 100%;
+      object-fit: cover; /* Scale video while maintaining aspect ratio */
+    }
+
+    .content {
+      background: #f0f0f0;
+      padding: 50px;
+      min-height: 200vh; /* Extra content for scrolling */
+      z-index: 1;
+      position: relative;
+    }
+
+    .content h1 {
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="video-section">
+    <div class="video-container">
+      <video id="scrollVideo" src="file_1920x1080-5400-v4-1.mp4" muted></video>
+    </div>
+  </div>
+
+  <div class="content">
+    <h1>Saptakanya Plane Crash</h1>
+    <p>
+      This webpage commemorates the 50th anniversary of the tragic Saptakanya plane crash. Scroll down to explore more about the incident and its impact.
+    </p>
+    <p>Additional content here...</p>
+  </div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const video = document.getElementById("scrollVideo");
+      const speedFactor = 0.3; // Adjust playback speed if needed
+
+      gsap.registerPlugin(ScrollTrigger);
+
+      video.addEventListener("loadedmetadata", () => {
+        const videoDuration = video.duration; // Get video duration
+        const scrollDuration = window.innerHeight * (1 / speedFactor); // Calculate scroll duration
+
+        // Dynamically adjust video section height
+        document.querySelector(".video-section").style.height = `${scrollDuration}px`;
+
+        // Pin the video and sync playback
+        ScrollTrigger.create({
+          trigger: ".video-section",
+          start: "top top", // Start when video section hits top
+          end: `+=${scrollDuration}`, // Ensure end matches scroll height
+          pin: ".video-container", // Pin video container
+          scrub: true, // Smooth sync with scrolling
+          onUpdate: (self) => {
+            video.currentTime = self.progress * videoDuration; // Sync video playback with scroll progress
+          },
+        });
+
+        // Content appears only after video ends
+        ScrollTrigger.create({
+          trigger: ".content",
+          start: `+=${scrollDuration}`, // Start after video section scrolls
+          end: "bottom bottom", // Allow natural scrolling for content
+          pin: false, // No pinning for content
+        });
+      });
+    });
+  </script>
+
+</body>
+</html>
